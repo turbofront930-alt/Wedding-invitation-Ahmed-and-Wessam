@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فرحة أحمد & وسام | 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold: #c5a059; --bg: #0a192f; }
+        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: #fff; margin: 0; overflow: hidden; }
+
+        /* شريط الحقوق الثابت */
+        .fixed-footer {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px); border-top: 1px solid var(--gold);
+            color: #fff; text-align: center; padding: 6px 0; font-size: 0.7rem; z-index: 10000;
+        }
+        .fixed-footer span { color: var(--gold); font-weight: bold; }
+
+        /* طبقات الدخول */
+        #password-layer, #game-layer {
+            position: fixed; inset: 0; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9000; background: var(--bg);
+        }
+
+        /* تصميم لوحة اللعبة (سلم وثعبان مصغر) */
+        .board {
+            display: grid; grid-template-columns: repeat(5, 50px); grid-template-rows: repeat(5, 50px);
+            gap: 5px; background: rgba(255,255,255,0.05); padding: 10px; border: 2px solid var(--gold);
+            position: relative; border-radius: 10px;
+        }
+        .cell {
+            width: 50px; height: 50px; border: 1px solid rgba(197, 160, 89, 0.2);
+            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+        }
+        .finish-cell { background: rgba(46, 204, 113, 0.2); color: #2ecc71; font-weight: bold; }
+        
+        #player-ball {
+            width: 30px; height: 30px; background: radial-gradient(circle, var(--gold), #8a6d3b);
+            border-radius: 50%; position: absolute; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 15px var(--gold); z-index: 10;
+        }
+
+        .controls { margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .btn-move {
+            background: var(--gold); border: none; padding: 15px; border-radius: 10px;
+            color: var(--bg); font-weight: bold; cursor: pointer;
+        }
+
+        /* محتوى الموقع الأساسي */
+        .page { display: none; flex-direction: column; align-items: center; padding: 20px; text-align: center; }
+        .page.active { display: flex; animation: fadeIn 1s; }
+        .gallery { width: 300px; height: 300px; border: 2px solid var(--gold); margin: 20px 0; position: relative; }
+        .slide { position: absolute; inset: 0; opacity: 0; transition: 1s; display: flex; align-items: center; justify-content: center; }
+        .slide.active { opacity: 1; }
+        .slide img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<audio id="bgMusic" loop><source src="wedding-song.mp3" type="audio/mpeg"></audio>
+
+<div class="fixed-footer">
+    تصميم <span>Engineer / Ibrahim Saad Abdelmawla</span> | جميع الحقوق محفوظة لموقع <span>Turbo Front</span>
+</div>
+
+<div id="password-layer">
+    <h2 style="font-family:'Amiri'; color:var(--gold);">أحمد & وسام</h2>
+    <input type="password" id="passInput" style="padding:10px; background:transparent; border:none; border-bottom:2px solid var(--gold); color:#fff; text-align:center;" placeholder="كلمة السر">
+    <button onclick="checkPass()" style="margin-top:20px; padding:10px 30px; background:var(--gold); border:none; cursor:pointer;">دخول</button>
+</div>
+
+<div id="game-layer" style="display:none;">
+    <h3 style="color:var(--gold);">وصل الكرة للونها الأخضر لفتح الدعوة!</h3>
+    <div class="board" id="gameBoard">
+        <div id="player-ball"></div>
+        <script>for(let i=1; i<=25; i++) document.write(`<div class="cell ${i==25?'finish-cell':'' }">${i==25?'🏠':i}</div>`)</script>
+    </div>
+    <div class="controls">
+        <divBase></div><button class="btn-move" onclick="move('up')">↑</button><div></div>
+        <button class="btn-move" onclick="move('left')">←</button>
+        <button class="btn-move" onclick="move('down')">↓</button>
+        <button class="btn-move" onclick="move('right')">→</button>
+    </div>
+</div>
+
+<div id="main-page" class="page">
+    <h1 style="font-family:'Amiri'; font-size: 2.5rem; color:var(--gold);">أحمد & وسام</h1>
+    <div class="gallery">
+        <div class="slide active"><img src="pic1.jpg"></div>
+        <div class="slide"><img src="pic2.jpg"></div>
+        <div class="slide"><img src="pic3.jpg"></div>
+        <div class="slide"><img src="pic4.jpg"></div>
+        <div class="slide"><img src="pic5.jpg"></div>
+        <div class="slide"><img src="pic6.jpg"></div>
+        <div class="slide"><img src="pic7.jpg"></div>
+        <div class="slide"><img src="pic8.jpg"></div>
+    </div>
+    <div style="border:1px solid var(--gold); padding:15px; border-radius:10px; background:rgba(255,255,255,0.05);">
+        <p>📅 الجمعة، 10 يوليو 2026</p>
+        <p>📍 قاعة تاج الملوك</p>
+        <a href="https://wa.me/201119770413?text=ألف+مبروك+أحمد+ووسام" style="color:#2ecc71; text-decoration:none; font-weight:bold;">تهنئة واتساب 💬</a>
+    </div>
+</div>
+
+<script>
+    let posX = 0, posY = 0; // إحداثيات اللاعب
+    const music = document.getElementById('bgMusic');
+
+    function checkPass() {
+        if(document.getElementById('passInput').value === "بحبك") {
+            music.play();
+            document.getElementById('password-layer').style.display = 'none';
+            document.getElementById('game-layer').style.display = 'flex';
+            updateBallPosition();
+        } else { alert("كلمة السر خطأ"); }
+    }
+
+    function move(dir) {
+        if(dir === 'up' && posY > 0) posY--;
+        if(dir === 'down' && posY < 4) posY++;
+        if(dir === 'left' && posX > 0) posX--;
+        if(dir === 'right' && posX < 4) posX++;
+        
+        updateBallPosition();
+
+        // فوز: الوصول لآخر خلية (4,4)
+        if(posX === 4 && posY === 4) {
+            setTimeout(() => {
+                document.getElementById('game-layer').style.display = 'none';
+                document.getElementById('main-page').classList.add('active');
+                startGallery();
+            }, 500);
+        }
+    }
+
+    function updateBallPosition() {
+        const ball = document.getElementById('player-ball');
+        // كل خلية 50px + 5px gap + 10px padding
+        ball.style.left = (10 + posX * 55) + 'px';
+        ball.style.top = (10 + posY * 55) + 'px';
+    }
+
+    function startGallery() {
+        let current = 0;
+        const slides = document.querySelectorAll('.slide');
+        setInterval(() => {
+            slides[current].classList.remove('active');
+            current = (current + 1) % slides.length;
+            slides[current].classList.add('active');
+        }, 3000);
+    }
+</script>
+
+</body>
+</html>
