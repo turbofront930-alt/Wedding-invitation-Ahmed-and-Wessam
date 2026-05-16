@@ -4,155 +4,341 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فرحة أحمد & وسام | 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;700&family=Reem+Kufi:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --gold: #c5a059; --bg: #0a192f; }
-        body { font-family: 'Cairo', sans-serif; background: var(--bg); color: #fff; margin: 0; overflow: hidden; }
+        :root { 
+            --gold: #c5a059; 
+            --light-gold: #f4e4bc;
+            --bg: #030812; 
+        }
+        
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            background: var(--bg); 
+            color: #fff; 
+            margin: 0; 
+            padding: 0;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 30%, #0d1b2a 0%, #050b14 70%, #02050a 100%);
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* حاوية تساقط الورد والقلوب المستمر */
+        #falling-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 99999; overflow: hidden;
+        }
+        .petal { position: absolute; top: -20px; pointer-events: none; animation: fallAnimation linear forwards; }
+        @keyframes fallAnimation {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+        }
 
         /* شريط الحقوق الثابت */
         .fixed-footer {
-            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px); border-top: 1px solid var(--gold);
-            color: #fff; text-align: center; padding: 6px 0; font-size: 0.7rem; z-index: 10000;
+            position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(2, 5, 10, 0.85);
+            backdrop-filter: blur(8px); border-top: 1px solid var(--gold);
+            color: #fff; text-align: center; padding: 8px 0; font-size: 0.75rem; z-index: 10000;
         }
         .fixed-footer span { color: var(--gold); font-weight: bold; }
 
-        /* طبقات الدخول */
-        #password-layer, #game-layer {
-            position: fixed; inset: 0; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 9000; background: var(--bg);
+        /* نظام الصفحات الكاملة المستقلة */
+        .page-slide {
+            position: fixed; inset: 0;
+            display: none; 
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 20px 80px 20px;
+            text-align: center;
+            width: 100vw; height: 100vh;
+        }
+        .page-slide.active {
+            display: flex;
+            animation: pageFadeIn 1s ease-in-out forwards;
+        }
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* تصميم لوحة اللعبة (سلم وثعبان مصغر) */
+        /* مربع الباسورد */
+        .password-box {
+            background: rgba(13, 27, 42, 0.65); backdrop-filter: blur(15px);
+            border: 2px solid var(--gold); border-radius: 12px; padding: 40px 30px;
+            width: 90%; max-width: 420px; box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+        }
+        .pass-input {
+            padding: 14px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(197, 160, 89, 0.4); 
+            border-bottom: 3px solid var(--gold); color: var(--light-gold); text-align: center; 
+            font-size: 1.25rem; width: 85%; outline: none; margin: 20px 0; border-radius: 6px;
+        }
+
+        /* لوحة لعبة السلم والثعبان المعدلة ميكانيكياً */
+        .board-wrapper {
+            position: relative;
+            background: rgba(197, 160, 89, 0.05);
+            padding: 15px;
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        }
         .board {
-            display: grid; grid-template-columns: repeat(5, 50px); grid-template-rows: repeat(5, 50px);
-            gap: 5px; background: rgba(255,255,255,0.05); padding: 10px; border: 2px solid var(--gold);
-            position: relative; border-radius: 10px;
+            display: grid; 
+            grid-template-columns: repeat(5, 55px); 
+            grid-template-rows: repeat(5, 55px);
+            gap: 6px; 
+            position: relative;
         }
-        .cell {
-            width: 50px; height: 50px; border: 1px solid rgba(197, 160, 89, 0.2);
-            display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+        .cell { 
+            width: 55px; 
+            height: 55px; 
+            border: 1px solid rgba(197, 160, 89, 0.2); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 0.85rem; 
+            color: var(--light-gold);
+            font-family: 'Cairo', sans-serif;
+            background: rgba(255,255,255,0.02);
         }
-        .finish-cell { background: rgba(46, 204, 113, 0.2); color: #2ecc71; font-weight: bold; }
+        .finish-cell { background: rgba(46, 204, 113, 0.2); color: #2ecc71; font-weight: bold; border-color: #2ecc71; }
         
         #player-ball {
-            width: 30px; height: 30px; background: radial-gradient(circle, var(--gold), #8a6d3b);
-            border-radius: 50%; position: absolute; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 15px var(--gold); z-index: 10;
+            width: 36px; 
+            height: 36px; 
+            background: radial-gradient(circle, #ffeaa7, var(--gold), #8a6d3b);
+            border-radius: 50%; 
+            position: absolute; 
+            /* هيديك حركة ناعمة جداً وثابتة */
+            transition: left 0.25s ease-out, top 0.25s ease-out; 
+            z-index: 10;
+            box-shadow: 0 0 15px var(--gold);
+            pointer-events: none;
+        }
+        .controls { margin-top: 25px; display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; justify-content: center; }
+        .btn-move { background: transparent; border: 1px solid var(--gold); padding: 12px; border-radius: 50%; color: var(--light-gold); cursor: pointer; font-size: 1.1rem; }
+        .btn-move:hover { background: var(--gold); color: #02050a; }
+
+        /* عرض الصور في صفحات مستقلة */
+        .full-page-img {
+            max-width: 90%; max-height: 65vh;
+            border: 2px solid var(--gold); border-radius: 12px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.8);
+            object-fit: contain;
         }
 
-        .controls { margin-top: 20px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .btn-move {
-            background: var(--gold); border: none; padding: 15px; border-radius: 10px;
-            color: var(--bg); font-weight: bold; cursor: pointer;
+        /* شريط التقدم للوقت */
+        .photo-progress-bar {
+            width: 80%; max-width: 400px; height: 4px; background: rgba(255,255,255,0.1);
+            margin-top: 20px; border-radius: 2px; overflow: hidden; position: relative;
         }
+        .photo-progress-fill { height: 100%; width: 0%; background: var(--gold); }
 
-        /* محتوى الموقع الأساسي */
-        .page { display: none; flex-direction: column; align-items: center; padding: 20px; text-align: center; }
-        .page.active { display: flex; animation: fadeIn 1s; }
-        .gallery { width: 300px; height: 300px; border: 2px solid var(--gold); margin: 20px 0; position: relative; }
-        .slide { position: absolute; inset: 0; opacity: 0; transition: 1s; display: flex; align-items: center; justify-content: center; }
-        .slide.active { opacity: 1; }
-        .slide img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        /* العداد التنازلي */
+        .countdown-section { display: flex; gap: 10px; margin: 20px 0; justify-content: center; }
+        .time-unit { background: rgba(197, 160, 89, 0.08); border: 1px solid var(--gold); border-radius: 8px; padding: 10px; min-width: 68px; }
+        .time-unit span { display: block; font-size: 1.4rem; font-weight: bold; color: var(--gold); }
+        .time-unit label { font-size: 0.75rem; color: #fff; }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* الأزرار الكبسولية التفاعلية */
+        .interactive-btn {
+            display: flex; align-items: center; justify-content: center; gap: 10px; background: transparent;
+            color: var(--light-gold); border: 2px solid var(--gold); padding: 14px 20px; margin: 15px 0;
+            width: 100%; font-size: 1.1rem; font-weight: bold; text-decoration: none; border-radius: 30px; transition: all 0.4s ease;
+        }
+        .interactive-btn:hover { background: linear-gradient(135deg, var(--gold), #8a6d3b); color: #02050a; transform: translateY(-3px); }
     </style>
 </head>
 <body>
 
 <audio id="bgMusic" loop><source src="wedding-song.mp3" type="audio/mpeg"></audio>
+<div id="falling-container"></div>
 
 <div class="fixed-footer">
     تصميم <span>Engineer / Ibrahim Saad Abdelmawla</span> | جميع الحقوق محفوظة لموقع <span>Turbo Front</span>
 </div>
 
-<div id="password-layer">
-    <h2 style="font-family:'Amiri'; color:var(--gold);">أحمد & وسام</h2>
-    <input type="password" id="passInput" style="padding:10px; background:transparent; border:none; border-bottom:2px solid var(--gold); color:#fff; text-align:center;" placeholder="كلمة السر">
-    <button onclick="checkPass()" style="margin-top:20px; padding:10px 30px; background:var(--gold); border:none; cursor:pointer;">دخول</button>
+<div id="page-password" class="page-slide active">
+    <div class="password-box">
+        <h2 style="font-family:'Reem Kufi'; color:var(--gold); font-size: 2rem; margin: 0;">أحمد & وسام</h2>
+        <p style="color: #ddd; font-size: 0.95rem;">أدخل كلمة السر لفتح المغلف الملكي</p>
+        <input type="text" id="passInput" class="pass-input" placeholder="كلمة السر">
+        <button onclick="checkPass()" class="interactive-btn" style="width: auto; padding: 10px 40px; margin: 0 auto;">فتح الدعوة ✨</button>
+    </div>
 </div>
 
-<div id="game-layer" style="display:none;">
-    <h3 style="color:var(--gold);">وصل الكرة للونها الأخضر لفتح الدعوة!</h3>
-    <div class="board" id="gameBoard">
+<div id="page-game" class="page-slide">
+    <h3 style="color:var(--gold); font-size: 1.1rem; margin-bottom: 20px;">حرّك الكرة الذهبية للوصول إلى الخانة 🏠 لفتح الفرحة!</h3>
+    <div class="board-wrapper">
         <div id="player-ball"></div>
-        <script>for(let i=1; i<=25; i++) document.write(`<div class="cell ${i==25?'finish-cell':'' }">${i==25?'🏠':i}</div>`)</script>
+        <div class="board" id="matrixBoard">
+            <script>
+                for(let r=0; r<5; r++) {
+                    for(let c=0; c<5; c++) {
+                        let num = r * 5 + c + 1;
+                        let isFinish = (r === 4 && c === 4) ? 'finish-cell' : '';
+                        let content = (r === 4 && c === 4) ? '🏠' : num;
+                        document.write(`<div class="cell ${isFinish}" id="cell-${r}-${c}">${content}</div>`);
+                    }
+                }
+            </script>
+        </div>
     </div>
     <div class="controls">
-        <divBase></div><button class="btn-move" onclick="move('up')">↑</button><div></div>
-        <button class="btn-move" onclick="move('left')">←</button>
-        <button class="btn-move" onclick="move('down')">↓</button>
-        <button class="btn-move" onclick="move('right')">→</button>
+        <div></div><button class="btn-move" onclick="move('up')">↑</button><div></div>
+        <button class="btn-move" onclick="move('left')">←</button><button class="btn-move" onclick="move('down')">↓</button><button class="btn-move" onclick="move('right')">→</button>
     </div>
 </div>
 
-<div id="main-page" class="page">
-    <h1 style="font-family:'Amiri'; font-size: 2.5rem; color:var(--gold);">أحمد & وسام</h1>
-    <div class="gallery">
-        <div class="slide active"><img src="pic1.jpg"></div>
-        <div class="slide"><img src="pic2.jpg"></div>
-        <div class="slide"><img src="pic3.jpg"></div>
-        <div class="slide"><img src="pic4.jpg"></div>
-        <div class="slide"><img src="pic5.jpg"></div>
-        <div class="slide"><img src="pic6.jpg"></div>
-        <div class="slide"><img src="pic7.jpg"></div>
-        <div class="slide"><img src="pic8.jpg"></div>
+<div id="page-countdown" class="page-slide">
+    <h1 style="font-family:'Reem Kufi'; font-size: 2.5rem; color:var(--gold); margin: 0;">أحمد & وسام</h1>
+    <p style="font-family: 'Amiri'; font-size: 1.3rem; color: var(--light-gold);">المتبقي على ليلة العمر:</p>
+    <div class="countdown-section">
+        <div class="time-unit"><span id="days">00</span><label>يوم</label></div>
+        <div class="time-unit"><span id="hours">00</span><label>ساعة</label></div>
+        <div class="time-unit"><span id="mins">00</span><label>دقيقة</label></div>
+        <div class="time-unit"><span id="secs">00</span><label>ثانية</label></div>
     </div>
-    <div style="border:1px solid var(--gold); padding:15px; border-radius:10px; background:rgba(255,255,255,0.05);">
-        <p>📅 الجمعة، 10 يوليو 2026</p>
-        <p>📍 قاعة تاج الملوك</p>
-        <a href="https://wa.me/201119770413?text=ألف+مبروك+أحمد+ووسام" style="color:#2ecc71; text-decoration:none; font-weight:bold;">تهنئة واتساب 💬</a>
+    <p style="color: var(--gold); font-size: 0.9rem;">جاري تحضير ألبوم الصور الملكي الخاص بنا...</p>
+</div>
+
+<div id="page-img1" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">فرحتنا تكتمل بكم ✨</h3><img src="pic1.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill1"></div></div></div>
+<div id="page-img2" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">أجمل حكاية 💕</h3><img src="pic2.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill2"></div></div></div>
+<div id="page-img3" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">عقد القران والبهجة 🌸</h3><img src="pic3.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill3"></div></div></div>
+<div id="page-img4" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">سند العمر والرفيق 👫</h3><img src="pic4.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill4"></div></div></div>
+<div id="page-img5" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">ضحكة من القلب ❤️‍🩹</h3><img src="pic5.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill5"></div></div></div>
+<div id="page-img6" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">بداية مشوارنا الدائم 🍃</h3><img src="pic6.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill6"></div></div></div>
+<div id="page-img7" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">بين ضي النجوم ✨</h3><img src="pic7.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill7"></div></div></div>
+<div id="page-img8" class="page-slide"><h3 style="color:var(--gold); font-family:'Amiri'; font-size:1.5rem;">مع من نحب ونعز 🌹</h3><img src="pic8.jpg" class="full-page-img"><div class="photo-progress-bar"><div class="photo-progress-fill" id="fill8"></div></div></div>
+
+<div id="page-final" class="page-slide">
+    <div class="password-box" style="padding: 25px 20px;">
+        <h1 style="font-family:'Reem Kufi'; font-size: 2.2rem; color:var(--gold); margin: 0;">في انتظار تشريفكم</h1>
+        <p style="font-size: 1.1rem; margin: 10px 0;">📅 الجمعة، 10 يوليو 2026 الساعة 8:00 مساءً</p>
+        <p style="font-size: 1.2rem; color: var(--gold); font-weight: bold; margin: 5px 0;">📍 قاعة تاج الملوك</p>
+        
+        <a href="https://share.google/W1ywA9S9YpQ49fQTx" target="_blank" class="interactive-btn">🧭 لوكيشن القاعة على الخريطة</a>
+        <a href="https://wa.me/201119770413?text=%D8%A7%D9%84%D9%81%20%D9%85%D8%A8%D9%81%D8%B1%D9%85%D9%83%20%D9%8A%D8%A7%20%D8%A7%D8%AD%D9%85%D8%AF%20%D9%88%D9%88%D8%B3%D8%A7%D9%85%20%D9%88%D8%B1%D8%A8%D9%86%D8%A7%20%D9%8A%D8%AA%D9%85%D9%85%D9%84%D9%83%D9%85%20%D8%B9%D9%84%D9%8A%20%D8%AE%D9%8A%D8%B1%20%F0%9F%91%AB%E2%9D%A4%EF%B8%8F%E2%80%8D%F0%9F%AA%B9" target="_blank" class="interactive-btn" style="border-color: #25D366; color: #25D366;">
+            💬 أرسل رسالة تهنئة للعروسين
+        </a>
     </div>
 </div>
 
 <script>
-    let posX = 0, posY = 0; // إحداثيات اللاعب
+    let posY = 0, posX = 0; // الصف (row) والعمود (col) يبدأ من 0،0
     const music = document.getElementById('bgMusic');
+    const slideTime = 4000;
+
+    // محرك الورد والقلوب
+    const container = document.getElementById('falling-container');
+    const items = ['🌸', '🌹', '❤️', '💕', '✨'];
+    setInterval(() => {
+        const item = document.createElement('div');
+        item.className = 'petal'; item.innerHTML = items[Math.floor(Math.random() * items.length)];
+        item.style.left = Math.random() * 100 + 'vw'; item.style.fontSize = (Math.random() * 20 + 15) + 'px';
+        item.style.animationDuration = (Math.random() * 3 + 4) + 's';
+        container.appendChild(item); setTimeout(() => item.remove(), 6000);
+    }, 250);
 
     function checkPass() {
         if(document.getElementById('passInput').value === "بحبك") {
-            music.play();
-            document.getElementById('password-layer').style.display = 'none';
-            document.getElementById('game-layer').style.display = 'flex';
-            updateBallPosition();
-        } else { alert("كلمة السر خطأ"); }
+            music.play().catch(e => console.log('Audio playing'));
+            switchPage('page-password', 'page-game');
+            // تأخير خفيف جداً لضمان رندر اللوحة قبل وضع الكرة في السنتر تماماً
+            setTimeout(updateBallPosition, 50);
+        } else { alert("كلمة السر خاطئة يا هندسة!"); }
     }
 
     function move(dir) {
-        if(dir === 'up' && posY > 0) posY--;
+        if(dir === 'up' && posY > 0) posY--; 
         if(dir === 'down' && posY < 4) posY++;
-        if(dir === 'left' && posX > 0) posX--;
+        if(dir === 'left' && posX > 0) posX--; 
         if(dir === 'right' && posX < 4) posX++;
         
         updateBallPosition();
 
-        // فوز: الوصول لآخر خلية (4,4)
+        // الفوز والوصول لـ (4,4) الخانة الأخيرة
         if(posX === 4 && posY === 4) {
             setTimeout(() => {
-                document.getElementById('game-layer').style.display = 'none';
-                document.getElementById('main-page').classList.add('active');
-                startGallery();
-            }, 500);
+                switchPage('page-game', 'page-countdown');
+                startCountdown();
+                setTimeout(() => startPhotoSlideshow(1), 4000);
+            }, 300);
         }
     }
 
+    // 🛠️ الميكانيكية الجديدة الفدائية والدقيقة للحركة بالملي 🛠️
     function updateBallPosition() {
         const ball = document.getElementById('player-ball');
-        // كل خلية 50px + 5px gap + 10px padding
-        ball.style.left = (10 + posX * 55) + 'px';
-        ball.style.top = (10 + posY * 55) + 'px';
+        // الوصول للخلية المستهدفة مباشرة عبر الـ ID الخاص بها في الـ Grid
+        const targetCell = document.getElementById(`cell-${posY}-${posX}`);
+        
+        if (targetCell) {
+            // حساب موضع الخلية الفعلي نسبةً للحاوية الأب (board-wrapper)
+            const cellLeft = targetCell.offsetLeft;
+            const cellTop = targetCell.offsetTop;
+            const cellWidth = targetCell.offsetWidth;
+            const cellHeight = targetCell.offsetHeight;
+            
+            // وضع الكرة في السنتر (المنتصف الهندسي للخلية) تماماً
+            ball.style.left = (cellLeft + (cellWidth / 2) - (ball.offsetWidth / 2)) + 'px';
+            ball.style.top = (cellTop + (cellHeight / 2) - (ball.offsetHeight / 2)) + 'px';
+        }
     }
 
-    function startGallery() {
-        let current = 0;
-        const slides = document.querySelectorAll('.slide');
+    // إعادة حساب موضع الكرة تلقائياً في حالة تغيير مقاس الشاشة أو التدوير (Responsive)
+    window.addEventListener('resize', updateBallPosition);
+
+    function switchPage(oldId, newId) {
+        document.getElementById(oldId).classList.remove('active');
+        document.getElementById(newId).classList.add('active');
+    }
+
+    function startCountdown() {
+        const target = new Date('July 10, 2026 20:00:00').getTime();
         setInterval(() => {
-            slides[current].classList.remove('active');
-            current = (current + 1) % slides.length;
-            slides[current].classList.add('active');
-        }, 3000);
+            const diff = target - new Date().getTime();
+            if(diff > 0) {
+                document.getElementById('days').innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById('hours').innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('mins').innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('secs').innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }, 1000);
+    }
+
+    function startPhotoSlideshow(slideNum) {
+        if(slideNum > 8) {
+            switchPage('page-img8', 'page-final');
+            return;
+        }
+        
+        let currentId = 'page-img' + slideNum;
+        if(slideNum === 1) {
+            switchPage('page-countdown', currentId);
+        } else {
+            switchPage('page-img' + (slideNum - 1), currentId);
+        }
+
+        const fill = document.getElementById('fill' + slideNum);
+        if(fill) {
+            let width = 0;
+            let barInterval = setInterval(() => {
+                width += 1;
+                fill.style.width = width + '%';
+                if(width >= 100) {
+                    clearInterval(barInterval);
+                    startPhotoSlideshow(slideNum + 1);
+                }
+            }, slideTime / 100);
+        }
     }
 </script>
-
 </body>
 </html>
